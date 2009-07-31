@@ -47,6 +47,7 @@
  * maxshownitems	- maximum numbers that will be shown at dropdown list (less better performance)
  * onselect			- fire event on item select
  * onremove			- fire event on item remove
+ * sep_keycodes	    - keys that accept an item (default: [13] - <return>)
  */
  
 jQuery(
@@ -128,12 +129,29 @@ jQuery(
 	        	
 		        function addItem (title, value, preadded)
 		        {
+                    // Leading and trailing spaces are removed
+                    title = title.replace(/^ */, "").replace(/ *$/, "");
+                    
+                    // Don't allow empty elements to be added
+                    if (title === '') {
+                        holder.find(".bit-input input")[0].value = "";
+                        return;
+                    }
+
 	                var li = document.createElement("li");
 	                var txt = document.createTextNode(title);
 	                var aclose = document.createElement("a");       
 	                
 	                $(li).attr({"class": "bit-box","rel": value});
-	                $(li).prepend(txt);        
+	                $(li).prepend(txt); 
+
+                    // Clicking selects element to be removed
+                    $(li).click(
+                        function() { 
+                          $(this).toggleClass("deleted"); 
+                        }
+                    );
+
 	                $(aclose).attr({"class": "closebutton","href": "#"});
 	                
 	                li.appendChild(aclose);
@@ -238,7 +256,7 @@ jQuery(
 					input.keypress(
 	                    function(event)
 	                    {							
-	                        if (event.keyCode == 13)
+	                        if (isKeyCodeSep(event.keyCode))
 							{
 							    return false;
 							}
@@ -495,7 +513,7 @@ jQuery(
 								holder.children("li.bit-box.deleted").removeClass("deleted");
 							}
 							
-	                        if (event.keyCode == 13 && checkFocusOn()) 
+	                        if (isKeyCodeSep(event.keyCode) && checkFocusOn()) 
 	                        {
 	                            var option = focuson;
 	                            addItem(option.text(), option.attr("rel"));
@@ -505,7 +523,7 @@ jQuery(
 								return false;
 	                        }
 							
-							if (event.keyCode == 13 && !checkFocusOn()) 
+							if (isKeyCodeSep(event.keyCode) && !checkFocusOn()) 
 	                        {
 								if (options.newel) 
 								{
@@ -623,6 +641,11 @@ jQuery(
                     return string;
                 }
 				
+                function isKeyCodeSep(keycode)
+                {
+                    return options.sep_keycodes[keycode] === true;
+                }
+
 		        var options = $.extend({
 				        json_url: null,
 				        cache: false,
@@ -634,7 +657,8 @@ jQuery(
 				        complete_text: "Start to type...",
 						maxshownitems:  30,
 						onselect: "",
-						onremove: ""
+						onremove: "",
+                        sep_keycodes: [13]
 			        }, opt);
 	        	
 		        //system variables
@@ -653,6 +677,14 @@ jQuery(
 		        var element = $(this);
 		        var elemid = element.attr("id");
 		        init();
+                
+                var keycodes = {};
+                for(var i = 0; i < options.sep_keycodes.length; i++)
+                {
+                    var keycode = options.sep_keycodes[i];
+                    keycodes[keycode] = true;
+                }
+                options.sep_keycodes = keycodes;
 
 		        return this;
 			});
