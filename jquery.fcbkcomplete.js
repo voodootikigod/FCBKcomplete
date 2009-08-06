@@ -232,6 +232,10 @@ jQuery(
 	                input.blur(
 	                    function()
 	                    {
+                            var value = xssPrevent($(this).val());
+                            if (value && options.accept_on_blur) {
+                                addItem(value, value);
+                            }
 	                        complete.fadeOut("fast");
 	                    }
 	                );
@@ -658,6 +662,7 @@ jQuery(
 						maxshownitems:  30,
 						onselect: "",
 						onremove: "",
+                        accept_on_blur: false,
                         sep_keycodes: [13]
 			        }, opt);
 	        	
