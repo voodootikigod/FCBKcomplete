@@ -86,8 +86,8 @@ $.FCBKCompleter = function(input, options) {
     COMMA: 188,
     PAGEUP: 33,
     PAGEDOWN: 34,
-    BACKSPACE: 8
-    // 191 ?
+    BACKSPACE: 8,
+    FORWARD_SLASH: 191
   };
 
   //========= FCBK variable ===========//
@@ -128,7 +128,6 @@ $.FCBKCompleter = function(input, options) {
     addInput(0);
   }
 
-
   function createFCBK() {
     element.hide();
     element.attr("multiple","multiple");
@@ -159,7 +158,6 @@ $.FCBKCompleter = function(input, options) {
     feed.css("width",complete.width());
   }
 
-
   function setupSelectsAndCache() {
     // Add class of 'selected' to all selected lis
     element.children(":selected").addClass("selected");
@@ -180,7 +178,6 @@ $.FCBKCompleter = function(input, options) {
       addItem(option.text(), option.val(), true);
     });
   }
-
 
   function addItem (title, value, preadded) {
     // Leading and trailing spaces are removed
@@ -238,7 +235,6 @@ $.FCBKCompleter = function(input, options) {
     browser_msie?browser_msie_frame.hide():'';
   }
   
-
   function removeItem(item) {
     if (options.onremove.length) {
       var _item = element.children("option[value=" + item.attr("rel") + "]");
@@ -250,7 +246,6 @@ $.FCBKCompleter = function(input, options) {
     deleting = 0;
   }
   
-
   function addInput(focusme) {
     var li = $(document.createElement("li"));
     var input = $(document.createElement("input"));
@@ -290,7 +285,7 @@ $.FCBKCompleter = function(input, options) {
 
     input.keydown(function(event) {
       //prevent to enter some bad chars when input is empty
-      if(event.keyCode == 191) {
+      if(event.keyCode == KEY.FORWARD_SLASH) {
         event.preventDefault();
         return false;
       }                                 
@@ -426,7 +421,6 @@ $.FCBKCompleter = function(input, options) {
     return text;
   }
 
-
   function bindFeedEvent() {
     feed.children("li").mouseover(function() {
       feed.children("li").removeClass("auto-focus");
@@ -448,8 +442,7 @@ $.FCBKCompleter = function(input, options) {
       feed.unbind("mousemove");
     });
   }
-  
-  
+    
   function bindEvents() {
     var maininput = $("#"+elemid + "_annoninput").children(".maininput");
     bindFeedEvent();
@@ -464,7 +457,7 @@ $.FCBKCompleter = function(input, options) {
 
     maininput.unbind("keydown");
     maininput.keydown(function(event) {
-      if(event.keyCode == 191) {
+      if(event.keyCode == KEY.FORWARD_SLASH) {
         event.preventDefault();
         return false;
       }
@@ -531,7 +524,6 @@ $.FCBKCompleter = function(input, options) {
     });
   }
 
-
   function addTextItem(value) {
     if (options.newel) {
       feed.children("li[fckb=1]").remove();
@@ -560,7 +552,6 @@ $.FCBKCompleter = function(input, options) {
     }catch(ex) {};
   }
   
-  
   function checkFocusOn() {
     if (focuson == null) {
       return false;
@@ -571,7 +562,6 @@ $.FCBKCompleter = function(input, options) {
     return true;
   }
 
-
   function xssPrevent(string) {
     string = string.replace(/[\"\'][\s]*javascript:(.*)[\"\']/g, "\"\"");
     string = string.replace(/script(.*)/g, "");
@@ -579,7 +569,6 @@ $.FCBKCompleter = function(input, options) {
     string = string.replace('/([\x00-\x08,\x0b-\x0c,\x0e-\x19])/', '');
     return string;
   }
-
 
   function isKeyCodeSep(keycode) {
     return options.sep_keycodes[keycode] === true;
