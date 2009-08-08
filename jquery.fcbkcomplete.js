@@ -38,6 +38,7 @@
     refactored code to follow a more standard form and clean form of namespacing and method declarations
     refactored preSet(); to setupSelectsAndCache();, also fixed a bug where correctly formed selected boxes with selected lis were not setup correctly
     changed default maxshownitems to 20
+    changed element instance variable to instead be called $element as per jquery style guidelines
  */
 
 
@@ -104,13 +105,18 @@ $.FCBKCompleter = function(input, options) {
   var browser_msie  = "\v"=="v";
   var browser_msie_frame;
 
-  var element = $(input);
-  var elemid = element.attr("id");
+  var $element = $(input);
+  var elemid   = $element.attr("id");
   
   
   //=========== Setup plugin ============//
   
-  init();
+  createFCBK();     
+  
+  setupSelectsAndCache();
+  
+  addInput(0);
+  
       
   var keycodes = {};
   for(var i = 0; i < options.sep_keycodes.length; i++) {
@@ -121,28 +127,22 @@ $.FCBKCompleter = function(input, options) {
   
       
   //========= Method declarations ===========//
-      
-  function init() {
-    createFCBK();     
-    setupSelectsAndCache();
-    addInput(0);
-  }
 
   function createFCBK() {
-    element.hide();
-    element.attr("multiple","multiple");
+    $element.hide();
+    $element.attr("multiple","multiple");
 
-    if (element.attr("name").indexOf("[]") == -1) {
-         element.attr("name",element.attr("name")+"[]");
+    if ($element.attr("name").indexOf("[]") == -1) {
+         $element.attr("name", $element.attr("name") + "[]");
     }
 
     holder = $(document.createElement("ul"));
     holder.attr("class", options.holder_class);
-    element.after(holder);
+    $element.after(holder);
 
     complete = $(document.createElement("div"));
     complete.addClass(options.results_class);
-    complete.append('<div class="default">'+ options.complete_text +"</div>");
+    complete.append('<div class="default">' + options.complete_text + "</div>");
 
     if (browser_msie) {
       complete.append('<iframe class="ie6fix" scrolling="no" frameborder="0"></iframe>');
@@ -158,12 +158,13 @@ $.FCBKCompleter = function(input, options) {
     feed.css("width",complete.width());
   }
 
+
   function setupSelectsAndCache() {
     // Add class of 'selected' to all selected lis
-    element.children(":selected").addClass("selected");
+    $element.children(":selected").addClass("selected");
 
     // Add all lis to cache and search string
-    element.children("option").each(function(index, element) {
+    $element.children("option").each(function(index, element) {
       option = $(element);
       cache.push({
         caption: option.text(),
@@ -173,11 +174,12 @@ $.FCBKCompleter = function(input, options) {
     });
 
     // add lis with class selected to facebook-complete box
-    element.children(".selected").each(function(index, element) {
+    $element.children(".selected").each(function(index, element) {
       option = $(element);
       addItem(option.text(), option.val(), true);
     });
   }
+
 
   function addItem (title, value, preadded) {
     // Leading and trailing spaces are removed
@@ -213,8 +215,8 @@ $.FCBKCompleter = function(input, options) {
       $("#"+elemid + "_annoninput").remove();
       var _item;
       addInput(1);
-      if (element.children("option[value=" + value + "]").length) {
-        _item = element.children("option[value=" + value + "]");
+      if ($element.children("option[value=" + value + "]").length) {
+        _item = $element.children("option[value=" + value + "]");
         _item.get(0).setAttribute("selected", "selected");
         if (!_item.hasClass("selected")) {
           _item.addClass("selected");
@@ -224,7 +226,7 @@ $.FCBKCompleter = function(input, options) {
         _item.attr("value", value).get(0).setAttribute("selected", "selected");
         _item.attr("value", value).addClass("selected");
         _item.text(title); 
-        element.append(_item);
+        $element.append(_item);
       }
       if (options.onselect.length) {
         funCall(options.onselect,_item)
@@ -235,17 +237,19 @@ $.FCBKCompleter = function(input, options) {
     browser_msie?browser_msie_frame.hide():'';
   }
   
+
   function removeItem(item) {
     if (options.onremove.length) {
-      var _item = element.children("option[value=" + item.attr("rel") + "]");
+      var _item = $element.children("option[value=" + item.attr("rel") + "]");
       funCall(options.onremove, _item);
     }
-    element.children("option[value=" + item.attr("rel") + "]").removeAttr("selected");
-    element.children("option[value=" + item.attr("rel") + "]").removeClass("selected");
+    $element.children("option[value=" + item.attr("rel") + "]").removeAttr("selected");
+    $element.children("option[value=" + item.attr("rel") + "]").removeClass("selected");
     item.remove();
     deleting = 0;
   }
   
+
   function addInput(focusme) {
     var li = $(document.createElement("li"));
     var input = $(document.createElement("input"));
@@ -379,7 +383,7 @@ $.FCBKCompleter = function(input, options) {
     while (match != null && maximum > 0) {
       var id = match[1];        
       var object = cache[id];
-      if (options.filter_selected && element.children("option[value=" + object.value + "]").hasClass("selected")) {
+      if (options.filter_selected && $element.children("option[value=" + object.value + "]").hasClass("selected")) {
         //nothing here...
       } else {
         content += '<li rel="' + object.value + '">' + itemIllumination(object.caption, etext) + '</li>';
@@ -408,6 +412,7 @@ $.FCBKCompleter = function(input, options) {
     }
   }
 
+
   function itemIllumination(text, etext) {
     if (options.filter_case) {
       try {
@@ -420,6 +425,7 @@ $.FCBKCompleter = function(input, options) {
     }
     return text;
   }
+
 
   function bindFeedEvent() {
     feed.children("li").mouseover(function() {
@@ -434,6 +440,7 @@ $.FCBKCompleter = function(input, options) {
     });
   }
 
+
   function removeFeedEvent() {
     feed.children("li").unbind("mouseover");
     feed.children("li").unbind("mouseout");
@@ -442,7 +449,8 @@ $.FCBKCompleter = function(input, options) {
       feed.unbind("mousemove");
     });
   }
-    
+  
+  
   function bindEvents() {
     var maininput = $("#"+elemid + "_annoninput").children(".maininput");
     bindFeedEvent();
@@ -524,6 +532,7 @@ $.FCBKCompleter = function(input, options) {
     });
   }
 
+
   function addTextItem(value) {
     if (options.newel) {
       feed.children("li[fckb=1]").remove();
@@ -539,6 +548,7 @@ $.FCBKCompleter = function(input, options) {
     }
   }
   
+  
   function funCall(func,item) { 
     var _object = "";     
     for(i=0;i < item.get(0).attributes.length;i++) {  
@@ -552,6 +562,7 @@ $.FCBKCompleter = function(input, options) {
     }catch(ex) {};
   }
   
+  
   function checkFocusOn() {
     if (focuson == null) {
       return false;
@@ -562,6 +573,7 @@ $.FCBKCompleter = function(input, options) {
     return true;
   }
 
+
   function xssPrevent(string) {
     string = string.replace(/[\"\'][\s]*javascript:(.*)[\"\']/g, "\"\"");
     string = string.replace(/script(.*)/g, "");
@@ -570,12 +582,12 @@ $.FCBKCompleter = function(input, options) {
     return string;
   }
 
+
   function isKeyCodeSep(keycode) {
     return options.sep_keycodes[keycode] === true;
   }
   
 };
-
 
 $.FCBKCompleter.defaults = {
   holder_class: 'holder',
@@ -594,6 +606,5 @@ $.FCBKCompleter.defaults = {
   onremove: "",
   sep_keycodes: [13]
 };
-
 
 })(jQuery);
