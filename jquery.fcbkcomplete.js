@@ -46,17 +46,19 @@
 /* Coded by: emposha <admin@emposha.com> */
 /* Copyright: Emposha.com <http://www.emposha.com/> - Distributed under MIT - Keep this message! */
 /*
+ * holder_class     - class for ul tag holder list (default 'holder')
+ * results_class    - class for div of search results (default 'facebook-auto')
  * json_url         - url to fetch json object
- * cache          - use cache
+ * cache            - use cache (default is true)
  * height           - maximum number of element shown before scroll will apear
  * newel            - show typed text like a element
- * firstselected  - automaticly select first element from dropdown
+ * firstselected    - automaticly select first element from dropdown
  * filter_case      - case sensitive filter
  * filter_selected  - filter selected items from list
  * complete_text    - text for complete page
- * maxshownitems  - maximum numbers that will be shown at dropdown list (less better performance)
- * onselect     - fire event on item select
- * onremove     - fire event on item remove
+ * maxshownitems    - maximum numbers that will be shown at dropdown list (less better performance)
+ * onselect         - fire event on item select
+ * onremove         - fire event on item remove
  * sep_keycodes     - keys that accept an item (default: [13] - <return>)
  */
 
@@ -70,8 +72,10 @@ $.fn.extend({
     return this.each(function() {
       new $.FCBKCompleter(this, options);
     });
-  }
-
+  },
+  addItem: function(title, value){
+		return this.trigger("addItem", [title, value]);
+	}
 });
 
 
@@ -125,7 +129,11 @@ $.FCBKCompleter = function(input, options) {
   }
   options.sep_keycodes = keycodes;
   
-      
+  
+  $element.bind("addItem", function() {
+		addItem(arguments[1], arguments[2])
+	})
+	
   //========= Method declarations ===========//
 
   function createFCBK() {
@@ -180,7 +188,7 @@ $.FCBKCompleter = function(input, options) {
     });
   }
 
-
+	
   function addItem (title, value, preadded) {
     // Leading and trailing spaces are removed
     title = title.replace(/^ */, "").replace(/ *$/, "");
