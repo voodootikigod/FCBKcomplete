@@ -108,7 +108,7 @@ $.FCBKCompleter = function(input, options) {
   var deleting    = 0;
   var browser_msie  = "\v"=="v";
   var browser_msie_frame;
-
+  var request_timer = false;
   var $element = $(input);
   var elemid   = $element.attr("id");
   
@@ -174,10 +174,7 @@ $.FCBKCompleter = function(input, options) {
     // Add all lis to cache and search string
     $element.children("option").each(function(index, element) {
       option = $(element);
-      cache.push({
-        caption: option.text(),
-        value: option.val()
-      });
+      cache.push(option.cache_object(option));
       search_string += "" + (cache.length - 1) + ":" + option.text() + ";";
     });
 
@@ -332,11 +329,17 @@ $.FCBKCompleter = function(input, options) {
             addMembers(etext);
             bindEvents();
           } else {
-            $.getJSON(options.json_url + "?tag=" + etext, null, function(data) {
-              addMembers(etext, data);
-              json_cache = true;
-              bindEvents();
-            });
+            clearTimeout(request_timer);
+            request_timer = setTimeout(function() {
+              $.getJSON(options.json_url + "?tag=" + etext, null, 
+                  function(data)
+                  {
+                      addMembers(etext, data);
+                      json_cache = true;
+                      bindEvents();
+                  }
+              );
+            }, options.delay);
           }
         } else {
           addMembers(etext);
@@ -368,9 +371,7 @@ $.FCBKCompleter = function(input, options) {
 
     if (data != null && data.length) {
       $.each(data, function(i, val) {
-          cache.push({ caption: val.caption,
-                       value: val.value
-          });
+          cache.push(options.cache_object(val));
           search_string += "" + (cache.length - 1) + ":" + val.caption + ";";
       });
     }
@@ -394,7 +395,7 @@ $.FCBKCompleter = function(input, options) {
       if (options.filter_selected && $element.children("option[value=" + object.value + "]").hasClass("selected")) {
         //nothing here...
       } else {
-        content += '<li rel="' + object.value + '">' + itemIllumination(object.caption, etext) + '</li>';
+        content += options.render_cache_object(object);
         counter++;
         maximum--;
       }
@@ -612,7 +613,22 @@ $.FCBKCompleter.defaults = {
   newel: false,
   onselect: "",
   onremove: "",
-  sep_keycodes: [13]
+  delay: 500,
+  sep_keycodes: [13],
+  render_cache_object: function(object) {
+    return '<li rel="' + object.value + '">' + itemIllumination(object.caption, etext) + '</li>';
+  },
+  cache_object: function(val) {
+    if (val.caption) {
+      return { caption: val.caption,
+                 value: val.value
+             };
+    } else {
+      return { caption: option.text(),
+                 value: option.val()
+             };
+    }
+  }
 };
 
 })(jQuery);
