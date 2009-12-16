@@ -466,7 +466,7 @@
             feed.children("li").unbind("mousedown");   
             feed.children("li").mousedown(function() {
                 var option = $(this);
-                addItem(option.text(), option.attr("rel"));
+                addItem(options.item_text(option), option.attr("rel"));
                 feed.hide();
                 browser_msie ? browser_msie_frame.hide() : '';
                 complete.hide();
@@ -485,7 +485,7 @@
 
                 if (isKeyCodeSep(event.keyCode) && checkFocusOn()) {
                     var option = focuson;
-                    addItem(option.text(), option.attr("rel"));
+                    addItem(options.item_text(option), option.attr("rel"));
                     complete.hide();
                     event.preventDefault();
                     focuson = null;
@@ -615,6 +615,9 @@
         onremove: "",
         delay: 500,
         sep_keycodes: [13],
+        item_text: function(object) {
+          return object.text();
+        },
         to_search_string: function(object) {
             return object.caption;
         },
