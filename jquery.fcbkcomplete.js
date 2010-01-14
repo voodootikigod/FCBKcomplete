@@ -1,3 +1,4 @@
+//java -jar ../compiler.jar --js jquery.fcbkcomplete.js --js_output_file jquery.fcbkcomplete.min.js --externs ext.js
 /*
   FCBKcomplete 2.6.2
   - Jquery version required: 1.2.x, 1.3.x
@@ -181,14 +182,14 @@
 
             // Add all lis to cache and search string
             $element.children("option").each(function(index, element) {
-                option = $(element);
+                var option = $(element);
                 cache.push(options.cache_object(option));
                 search_string += "" + (cache.length - 1) + ":" + option.text() + ";";
             });
 
             // add lis with class selected to facebook-complete box
             $element.children(".selected").each(function(index, element) {
-                option = $(element);
+                var option = $(element);
                 addItem(option.text(), option.val(), true);
             });
         }
