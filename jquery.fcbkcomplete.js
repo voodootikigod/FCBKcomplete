@@ -1,5 +1,5 @@
 /*
-  FCBKcomplete 2.6
+  FCBKcomplete 2.6.2
   - Jquery version required: 1.2.x, 1.3.x
 
   Changelog:
@@ -39,11 +39,19 @@
   refactored preSet(); to setupSelectsAndCache();, also fixed a bug where correctly formed selected boxes with selected lis were not setup correctly
   changed default maxshownitems to 20
   changed element instance variable to instead be called $element as per jquery style guidelines
+  
+  
+  - 2.6.2 -- @voodootikigod
+  Exposed more options for how an object is cached and rendered within the FCBKComplete viewer and selector. Can now support rich (image, subtitle, etc) presentation.
+  Fixed up various bugs that prevented first option empty.
+  added the following new options: to_search_string, render_cache_object, item_text, cache_object
+  
 */
 
 
 
 /* Coded by: emposha <admin@emposha.com> */
+/* Updated by: voodootikigod <voodootikigod@gmail.com> */
 /* Copyright: Emposha.com <http://www.emposha.com/> - Distributed under MIT - Keep this message! */
 /*
  * holder_class     - class for ul tag holder list (default 'holder')
@@ -174,7 +182,7 @@
             // Add all lis to cache and search string
             $element.children("option").each(function(index, element) {
                 option = $(element);
-                cache.push(option.cache_object(option));
+                cache.push(options.cache_object(option));
                 search_string += "" + (cache.length - 1) + ":" + option.text() + ";";
             });
 
@@ -187,12 +195,15 @@
 
 	
         function addItem (title, value, preadded) {
+
             // Leading and trailing spaces are removed
             title = title.replace(/^ */, "").replace(/ *$/, "");
 
             // Don't allow empty elements to be added
             if (title === '') {
-                holder.find(".bit-input input")[0].value = "";
+                if (holder.find(".bit-input input").length > 0) {
+                  holder.find(".bit-input input")[0].value = "";
+                }
                 return;
             }
 
