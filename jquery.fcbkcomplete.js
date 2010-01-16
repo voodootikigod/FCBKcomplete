@@ -497,7 +497,12 @@
 
                 if (isKeyCodeSep(event.keyCode) && checkFocusOn()) {
                     var option = focuson;
-                    addItem(options.item_text(option), option.attr("rel"));
+                    var name = option.item_text(option);
+                    var id = option.attr("rel");
+                    if (!id || jQuery.trim(id) === "") {
+                        id = name;
+                    }
+                    addItem(name, id);
                     complete.hide();
                     event.preventDefault();
                     focuson = null;
