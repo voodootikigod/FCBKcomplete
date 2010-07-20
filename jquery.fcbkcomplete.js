@@ -51,9 +51,10 @@
 
 
 
-/* Coded by: emposha <admin@emposha.com> */
+/* Coded by: Guillermo Rauch <http://devthought.com> */
+/* Updated by: emposha <admin@emposha.com> */
 /* Updated by: voodootikigod <voodootikigod@gmail.com> */
-/* Copyright: Emposha.com <http://www.emposha.com/> - Distributed under MIT - Keep this message! */
+/* Copyright: Guillermo Rauch <http://devthought.com> - Distributed under MIT - Keep this message! */
 /*
  * holder_class     - class for ul tag holder list (default 'holder')
  * results_class    - class for div of search results (default 'facebook-auto')
